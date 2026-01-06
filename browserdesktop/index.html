@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrowserDesktop - Beautiful New Tab Extension</title>
+  <meta name="description" content="Transform your browser's new tab into a stunning, customizable dashboard with beautiful backgrounds, weather, and more.">
+  <meta name="keywords" content="browser extension, new tab, chrome extension, wallpaper, weather widget, productivity">
+  <meta property="og:title" content="BrowserDesktop - Beautiful New Tab Extension">
+  <meta property="og:description" content="Transform your browser's new tab into a stunning, customizable dashboard.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/preview.png">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #4a9eff;
+      --primary-dark: #2d7fd9;
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #f59e0b;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 50%, #1a1a2e 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('assets/hero-bg.jpg') center/cover;
+      opacity: 0.15;
+      z-index: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+    }
+
+    .logo {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 1.5rem;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(74, 158, 255, 0.3);
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tagline {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+      max-width: 600px;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 10px 40px rgba(74, 158, 255, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 15px 50px rgba(74, 158, 255, 0.5);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .version-badge {
+      display: inline-block;
+      background: rgba(74, 158, 255, 0.2);
+      color: var(--primary);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Preview */
+    .preview-container {
+      margin-top: 3rem;
+      position: relative;
+    }
+
+    .preview-image {
+      max-width: 100%;
+      width: 900px;
+      border-radius: 16px;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Features Section */
+    .features {
+      padding: 6rem 2rem;
+      background: var(--bg-dark);
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 4rem;
+      font-size: 1.1rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      padding: 2rem;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(74, 158, 255, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Download Section */
+    .download {
+      padding: 6rem 2rem;
+      background: linear-gradient(180deg, var(--bg-dark) 0%, #1e293b 100%);
+      text-align: center;
+    }
+
+    .download-card {
+      background: var(--bg-card);
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 3rem;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .download-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .browser-icons {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .browser-icon {
+      width: 48px;
+      height: 48px;
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+
+    .browser-icon:hover {
+      opacity: 1;
+    }
+
+    .file-info {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 1.5rem;
+    }
+
+    /* Installation Steps */
+    .installation {
+      padding: 6rem 2rem;
+      background: var(--bg-dark);
+    }
+
+    .steps {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .step {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      align-items: flex-start;
+    }
+
+    .step-number {
+      width: 50px;
+      height: 50px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .step-content h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-content p {
+      color: var(--text-muted);
+    }
+
+    .step-content code {
+      background: rgba(74, 158, 255, 0.2);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.9rem;
+    }
+
+    /* Language Selector */
+    .language-selector {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 100;
+    }
+
+    .language-selector select {
+      background: rgba(30, 41, 59, 0.9);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Footer */
+    footer {
+      padding: 3rem 2rem;
+      background: #0a0f1a;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .copyright {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      .tagline {
+        font-size: 1.1rem;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+      }
+
+      .step {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-content {
+      animation: fadeInUp 1s ease;
+    }
+
+    .preview-container {
+      animation: fadeInUp 1s ease 0.3s both;
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Selector -->
+  <div class="language-selector">
+    <select id="lang-select" onchange="changeLanguage(this.value)">
+      <option value="en">🇺🇸 English</option>
+      <option value="zh">🇨🇳 中文</option>
+      <option value="ja">🇯🇵 日本語</option>
+      <option value="ko">🇰🇷 한국어</option>
+      <option value="es">🇪🇸 Español</option>
+      <option value="fr">🇫🇷 Français</option>
+      <option value="de">🇩🇪 Deutsch</option>
+    </select>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <img src="assets/icon128.png" alt="BrowserDesktop Logo" class="logo">
+      <span class="version-badge">v1.1.0</span>
+      <h1 data-i18n="heroTitle">BrowserDesktop</h1>
+      <p class="tagline" data-i18n="heroTagline">Transform your browser's new tab into a stunning, customizable dashboard with beautiful 4K backgrounds, weather widgets, and more.</p>
+      
+      <div class="cta-buttons">
+        <a href="https://github.com/chenning007/BrowserDesktop/releases/latest/download/BrowserDesktop.zip" class="btn btn-primary" id="download-btn">
+          <span>⬇️</span>
+          <span data-i18n="downloadBtn">Download Extension</span>
+        </a>
+        <a href="https://github.com/chenning007/BrowserDesktop" class="btn btn-secondary" target="_blank">
+          <span>⭐</span>
+          <span data-i18n="githubBtn">View on GitHub</span>
+        </a>
+      </div>
+
+      <div class="preview-container">
+        <img src="assets/preview.svg" alt="BrowserDesktop Preview" class="preview-image">
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <h2 class="section-title" data-i18n="featuresTitle">Features</h2>
+    <p class="section-subtitle" data-i18n="featuresSubtitle">Everything you need for a beautiful and productive new tab experience</p>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🖼️</div>
+        <h3 data-i18n="feature1Title">4K Backgrounds</h3>
+        <p data-i18n="feature1Desc">Stunning high-resolution images from 20+ categories including nature, space, architecture, and more.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🌤️</div>
+        <h3 data-i18n="feature2Title">Weather Widget</h3>
+        <p data-i18n="feature2Desc">Multi-city weather support with automatic location detection. Click to cycle through your favorite cities.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">⏰</div>
+        <h3 data-i18n="feature3Title">Clock & Date</h3>
+        <p data-i18n="feature3Desc">Beautiful digital clock with customizable 12/24 hour format and date display options.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">⚙️</div>
+        <h3 data-i18n="feature4Title">Customizable</h3>
+        <p data-i18n="feature4Desc">Adjust blur, opacity, auto-change intervals, and pin your favorite image categories.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🌍</div>
+        <h3 data-i18n="feature5Title">Multi-Language</h3>
+        <p data-i18n="feature5Desc">Available in English, Chinese, Japanese, Korean, Spanish, French, and German.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3 data-i18n="feature6Title">Privacy First</h3>
+        <p data-i18n="feature6Desc">No account required. All settings stored locally. No tracking or data collection.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download Section -->
+  <section class="download" id="download">
+    <div class="download-card">
+      <div class="download-icon">📦</div>
+      <h2 class="section-title" data-i18n="downloadTitle">Download Now</h2>
+      <p class="section-subtitle" data-i18n="downloadSubtitle">Works on all Chromium-based browsers</p>
+      
+      <div class="browser-icons">
+        <img src="assets/chrome.svg" alt="Chrome" class="browser-icon" title="Google Chrome">
+        <img src="assets/edge.svg" alt="Edge" class="browser-icon" title="Microsoft Edge">
+        <img src="assets/brave.svg" alt="Brave" class="browser-icon" title="Brave">
+        <img src="assets/opera.svg" alt="Opera" class="browser-icon" title="Opera">
+      </div>
+      
+      <a href="https://github.com/chenning007/BrowserDesktop/releases/latest/download/BrowserDesktop.zip" class="btn btn-primary">
+        <span>⬇️</span>
+        <span data-i18n="downloadBtn">Download Extension</span>
+      </a>
+      
+      <p class="file-info" data-i18n="fileInfo">ZIP file • ~50KB • Free & Open Source</p>
+    </div>
+  </section>
+
+  <!-- Installation Section -->
+  <section class="installation" id="install">
+    <h2 class="section-title" data-i18n="installTitle">Installation</h2>
+    <p class="section-subtitle" data-i18n="installSubtitle">Get started in just 4 simple steps</p>
+    
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3 data-i18n="step1Title">Download & Extract</h3>
+          <p data-i18n="step1Desc">Download the ZIP file and extract it to a permanent location on your computer.</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3 data-i18n="step2Title">Open Extensions Page</h3>
+          <p data-i18n="step2Desc">Go to <code>chrome://extensions/</code> in Chrome, <code>edge://extensions/</code> in Edge, or <code>brave://extensions/</code> in Brave.</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3 data-i18n="step3Title">Enable Developer Mode</h3>
+          <p data-i18n="step3Desc">Toggle the "Developer mode" switch in the top-right corner of the extensions page.</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h3 data-i18n="step4Title">Load the Extension</h3>
+          <p data-i18n="step4Desc">Click "Load unpacked" and select the extracted folder containing manifest.json. Done!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-links">
+      <a href="https://github.com/chenning007/BrowserDesktop" target="_blank">GitHub</a>
+      <a href="https://github.com/chenning007/BrowserDesktop/issues" target="_blank" data-i18n="reportIssue">Report Issue</a>
+      <a href="https://github.com/chenning007/BrowserDesktop/blob/main/PRIVACY.md" target="_blank" data-i18n="privacy">Privacy Policy</a>
+      <a href="https://github.com/chenning007/BrowserDesktop/blob/main/LICENSE.md" target="_blank" data-i18n="license">License</a>
+    </div>
+    <p class="copyright">© 2026 BrowserDesktop. Made with ❤️ by ningchen</p>
+  </footer>
+
+  <script>
+    // Translations
+    const translations = {
+      en: {
+        heroTitle: "BrowserDesktop",
+        heroTagline: "Transform your browser's new tab into a stunning, customizable dashboard with beautiful 4K backgrounds, weather widgets, and more.",
+        downloadBtn: "Download Extension",
+        githubBtn: "View on GitHub",
+        featuresTitle: "Features",
+        featuresSubtitle: "Everything you need for a beautiful and productive new tab experience",
+        feature1Title: "4K Backgrounds",
+        feature1Desc: "Stunning high-resolution images from 20+ categories including nature, space, architecture, and more.",
+        feature2Title: "Weather Widget",
+        feature2Desc: "Multi-city weather support with automatic location detection. Click to cycle through your favorite cities.",
+        feature3Title: "Clock & Date",
+        feature3Desc: "Beautiful digital clock with customizable 12/24 hour format and date display options.",
+        feature4Title: "Customizable",
+        feature4Desc: "Adjust blur, opacity, auto-change intervals, and pin your favorite image categories.",
+        feature5Title: "Multi-Language",
+        feature5Desc: "Available in English, Chinese, Japanese, Korean, Spanish, French, and German.",
+        feature6Title: "Privacy First",
+        feature6Desc: "No account required. All settings stored locally. No tracking or data collection.",
+        downloadTitle: "Download Now",
+        downloadSubtitle: "Works on all Chromium-based browsers",
+        fileInfo: "ZIP file • ~50KB • Free & Open Source",
+        installTitle: "Installation",
+        installSubtitle: "Get started in just 4 simple steps",
+        step1Title: "Download & Extract",
+        step1Desc: "Download the ZIP file and extract it to a permanent location on your computer.",
+        step2Title: "Open Extensions Page",
+        step2Desc: "Go to chrome://extensions/ in Chrome, edge://extensions/ in Edge, or brave://extensions/ in Brave.",
+        step3Title: "Enable Developer Mode",
+        step3Desc: "Toggle the \"Developer mode\" switch in the top-right corner of the extensions page.",
+        step4Title: "Load the Extension",
+        step4Desc: "Click \"Load unpacked\" and select the extracted folder containing manifest.json. Done!",
+        reportIssue: "Report Issue",
+        privacy: "Privacy Policy",
+        license: "License"
+      },
+      zh: {
+        heroTitle: "BrowserDesktop",
+        heroTagline: "将浏览器新标签页转变为精美的可定制仪表板，拥有精美的4K背景、天气组件等功能。",
+        downloadBtn: "下载扩展",
+        githubBtn: "在 GitHub 上查看",
+        featuresTitle: "功能特性",
+        featuresSubtitle: "为您提供美观高效的新标签页体验所需的一切",
+        feature1Title: "4K 背景图片",
+        feature1Desc: "来自20多个分类的精美高清图片，包括自然、太空、建筑等。",
+        feature2Title: "天气组件",
+        feature2Desc: "支持多城市天气显示和自动位置检测。点击可切换城市。",
+        feature3Title: "时钟和日期",
+        feature3Desc: "精美的数字时钟，支持12/24小时制和日期显示选项。",
+        feature4Title: "高度可定制",
+        feature4Desc: "调整模糊度、透明度、自动更换间隔，并收藏喜欢的图片分类。",
+        feature5Title: "多语言支持",
+        feature5Desc: "支持英语、中文、日语、韩语、西班牙语、法语和德语。",
+        feature6Title: "隐私优先",
+        feature6Desc: "无需注册账号。所有设置本地存储。无追踪，无数据收集。",
+        downloadTitle: "立即下载",
+        downloadSubtitle: "支持所有基于 Chromium 的浏览器",
+        fileInfo: "ZIP 文件 • 约50KB • 免费开源",
+        installTitle: "安装指南",
+        installSubtitle: "只需4个简单步骤即可开始使用",
+        step1Title: "下载并解压",
+        step1Desc: "下载 ZIP 文件并解压到电脑上的一个永久位置。",
+        step2Title: "打开扩展程序页面",
+        step2Desc: "Chrome 访问 chrome://extensions/，Edge 访问 edge://extensions/，Brave 访问 brave://extensions/。",
+        step3Title: "启用开发者模式",
+        step3Desc: "打开扩展程序页面右上角的"开发者模式"开关。",
+        step4Title: "加载扩展程序",
+        step4Desc: "点击"加载已解压的扩展程序"，选择包含 manifest.json 的文件夹。完成！",
+        reportIssue: "报告问题",
+        privacy: "隐私政策",
+        license: "许可证"
+      },
+      ja: {
+        heroTitle: "BrowserDesktop",
+        heroTagline: "ブラウザの新しいタブを、美しい4K背景、天気ウィジェットなどを備えた素晴らしいカスタマイズ可能なダッシュボードに変換します。",
+        downloadBtn: "拡張機能をダウンロード",
+        githubBtn: "GitHubで見る",
+        featuresTitle: "機能",
+        featuresSubtitle: "美しく生産的な新しいタブ体験に必要なすべて",
+        feature1Title: "4K背景画像",
+        feature1Desc: "自然、宇宙、建築など、20以上のカテゴリから美しい高解像度画像。",
+        feature2Title: "天気ウィジェット",
+        feature2Desc: "自動位置検出を備えた複数都市の天気サポート。クリックしてお気に入りの都市を切り替え。",
+        feature3Title: "時計と日付",
+        feature3Desc: "12/24時間形式と日付表示オプションをカスタマイズ可能な美しいデジタル時計。",
+        feature4Title: "カスタマイズ可能",
+        feature4Desc: "ぼかし、透明度、自動変更間隔を調整し、お気に入りの画像カテゴリをピン留め。",
+        feature5Title: "多言語対応",
+        feature5Desc: "英語、中国語、日本語、韓国語、スペイン語、フランス語、ドイツ語に対応。",
+        feature6Title: "プライバシー優先",
+        feature6Desc: "アカウント不要。すべての設定はローカルに保存。トラッキングやデータ収集なし。",
+        downloadTitle: "今すぐダウンロード",
+        downloadSubtitle: "すべてのChromiumベースのブラウザで動作",
+        fileInfo: "ZIPファイル • 約50KB • 無料＆オープンソース",
+        installTitle: "インストール",
+        installSubtitle: "4つの簡単なステップで開始",
+        step1Title: "ダウンロードと解凍",
+        step1Desc: "ZIPファイルをダウンロードし、コンピュータの永続的な場所に解凍します。",
+        step2Title: "拡張機能ページを開く",
+        step2Desc: "Chromeは chrome://extensions/、Edgeは edge://extensions/、Braveは brave://extensions/ にアクセス。",
+        step3Title: "デベロッパーモードを有効化",
+        step3Desc: "拡張機能ページの右上にある「デベロッパーモード」スイッチをオンにします。",
+        step4Title: "拡張機能を読み込む",
+        step4Desc: "「パッケージ化されていない拡張機能を読み込む」をクリックし、manifest.jsonを含むフォルダを選択。完了！",
+        reportIssue: "問題を報告",
+        privacy: "プライバシーポリシー",
+        license: "ライセンス"
+      },
+      ko: {
+        heroTitle: "BrowserDesktop",
+        heroTagline: "브라우저의 새 탭을 아름다운 4K 배경, 날씨 위젯 등을 갖춘 멋진 맞춤형 대시보드로 변환하세요.",
+        downloadBtn: "확장 프로그램 다운로드",
+        githubBtn: "GitHub에서 보기",
+        featuresTitle: "기능",
+        featuresSubtitle: "아름답고 생산적인 새 탭 경험에 필요한 모든 것",
+        feature1Title: "4K 배경 이미지",
+        feature1Desc: "자연, 우주, 건축 등 20개 이상의 카테고리에서 멋진 고해상도 이미지.",
+        feature2Title: "날씨 위젯",
+        feature2Desc: "자동 위치 감지와 함께 다중 도시 날씨 지원. 클릭하여 도시 전환.",
+        feature3Title: "시계 및 날짜",
+        feature3Desc: "12/24시간 형식과 날짜 표시 옵션을 사용자 정의할 수 있는 아름다운 디지털 시계.",
+        feature4Title: "사용자 정의 가능",
+        feature4Desc: "블러, 불투명도, 자동 변경 간격을 조정하고 좋아하는 이미지 카테고리를 고정.",
+        feature5Title: "다국어 지원",
+        feature5Desc: "영어, 중국어, 일본어, 한국어, 스페인어, 프랑스어, 독일어 지원.",
+        feature6Title: "개인정보 우선",
+        feature6Desc: "계정 필요 없음. 모든 설정은 로컬에 저장. 추적이나 데이터 수집 없음.",
+        downloadTitle: "지금 다운로드",
+        downloadSubtitle: "모든 Chromium 기반 브라우저에서 작동",
+        fileInfo: "ZIP 파일 • ~50KB • 무료 및 오픈 소스",
+        installTitle: "설치",
+        installSubtitle: "4단계로 간단하게 시작",
+        step1Title: "다운로드 및 압축 해제",
+        step1Desc: "ZIP 파일을 다운로드하고 컴퓨터의 영구적인 위치에 압축을 해제합니다.",
+        step2Title: "확장 프로그램 페이지 열기",
+        step2Desc: "Chrome은 chrome://extensions/, Edge는 edge://extensions/, Brave는 brave://extensions/ 로 이동.",
+        step3Title: "개발자 모드 활성화",
+        step3Desc: "확장 프로그램 페이지 오른쪽 상단의 \"개발자 모드\" 스위치를 켭니다.",
+        step4Title: "확장 프로그램 로드",
+        step4Desc: "\"압축해제된 확장 프로그램을 로드합니다\"를 클릭하고 manifest.json이 포함된 폴더를 선택. 완료!",
+        reportIssue: "문제 신고",
+        privacy: "개인정보 처리방침",
+        license: "라이선스"
+      },
+      es: {
+        heroTitle: "BrowserDesktop",
+        heroTagline: "Transforma la nueva pestaña de tu navegador en un impresionante panel personalizable con hermosos fondos 4K, widgets del clima y más.",
+        downloadBtn: "Descargar Extensión",
+        githubBtn: "Ver en GitHub",
+        featuresTitle: "Características",
+        featuresSubtitle: "Todo lo que necesitas para una experiencia de nueva pestaña hermosa y productiva",
+        feature1Title: "Fondos 4K",
+        feature1Desc: "Impresionantes imágenes de alta resolución de más de 20 categorías incluyendo naturaleza, espacio, arquitectura y más.",
+        feature2Title: "Widget del Clima",
+        feature2Desc: "Soporte de clima multi-ciudad con detección automática de ubicación. Haz clic para alternar entre tus ciudades favoritas.",
+        feature3Title: "Reloj y Fecha",
+        feature3Desc: "Hermoso reloj digital con formato de 12/24 horas personalizable y opciones de visualización de fecha.",
+        feature4Title: "Personalizable",
+        feature4Desc: "Ajusta el desenfoque, la opacidad, los intervalos de cambio automático y fija tus categorías de imágenes favoritas.",
+        feature5Title: "Multi-idioma",
+        feature5Desc: "Disponible en inglés, chino, japonés, coreano, español, francés y alemán.",
+        feature6Title: "Privacidad Primero",
+        feature6Desc: "Sin cuenta requerida. Todas las configuraciones almacenadas localmente. Sin seguimiento ni recopilación de datos.",
+        downloadTitle: "Descargar Ahora",
+        downloadSubtitle: "Funciona en todos los navegadores basados en Chromium",
+        fileInfo: "Archivo ZIP • ~50KB • Gratis y de Código Abierto",
+        installTitle: "Instalación",
+        installSubtitle: "Comienza en solo 4 simples pasos",
+        step1Title: "Descargar y Extraer",
+        step1Desc: "Descarga el archivo ZIP y extráelo a una ubicación permanente en tu computadora.",
+        step2Title: "Abrir Página de Extensiones",
+        step2Desc: "Ve a chrome://extensions/ en Chrome, edge://extensions/ en Edge, o brave://extensions/ en Brave.",
+        step3Title: "Habilitar Modo Desarrollador",
+        step3Desc: "Activa el interruptor \"Modo desarrollador\" en la esquina superior derecha de la página de extensiones.",
+        step4Title: "Cargar la Extensión",
+        step4Desc: "Haz clic en \"Cargar descomprimida\" y selecciona la carpeta extraída que contiene manifest.json. ¡Listo!",
+        reportIssue: "Reportar Problema",
+        privacy: "Política de Privacidad",
+        license: "Licencia"
+      },
+      fr: {
+        heroTitle: "BrowserDesktop",
+        heroTagline: "Transformez le nouvel onglet de votre navigateur en un superbe tableau de bord personnalisable avec de magnifiques fonds d'écran 4K, des widgets météo et plus encore.",
+        downloadBtn: "Télécharger l'Extension",
+        githubBtn: "Voir sur GitHub",
+        featuresTitle: "Fonctionnalités",
+        featuresSubtitle: "Tout ce dont vous avez besoin pour une expérience de nouvel onglet belle et productive",
+        feature1Title: "Fonds d'écran 4K",
+        feature1Desc: "Superbes images haute résolution de plus de 20 catégories incluant nature, espace, architecture et plus.",
+        feature2Title: "Widget Météo",
+        feature2Desc: "Support météo multi-villes avec détection automatique de la localisation. Cliquez pour parcourir vos villes préférées.",
+        feature3Title: "Horloge et Date",
+        feature3Desc: "Belle horloge numérique avec format 12/24 heures personnalisable et options d'affichage de la date.",
+        feature4Title: "Personnalisable",
+        feature4Desc: "Ajustez le flou, l'opacité, les intervalles de changement automatique et épinglez vos catégories d'images préférées.",
+        feature5Title: "Multi-langue",
+        feature5Desc: "Disponible en anglais, chinois, japonais, coréen, espagnol, français et allemand.",
+        feature6Title: "Confidentialité d'abord",
+        feature6Desc: "Aucun compte requis. Tous les paramètres stockés localement. Pas de suivi ni de collecte de données.",
+        downloadTitle: "Télécharger Maintenant",
+        downloadSubtitle: "Fonctionne sur tous les navigateurs basés sur Chromium",
+        fileInfo: "Fichier ZIP • ~50Ko • Gratuit et Open Source",
+        installTitle: "Installation",
+        installSubtitle: "Commencez en seulement 4 étapes simples",
+        step1Title: "Télécharger et Extraire",
+        step1Desc: "Téléchargez le fichier ZIP et extrayez-le vers un emplacement permanent sur votre ordinateur.",
+        step2Title: "Ouvrir la Page des Extensions",
+        step2Desc: "Allez à chrome://extensions/ dans Chrome, edge://extensions/ dans Edge, ou brave://extensions/ dans Brave.",
+        step3Title: "Activer le Mode Développeur",
+        step3Desc: "Activez l'interrupteur \"Mode développeur\" dans le coin supérieur droit de la page des extensions.",
+        step4Title: "Charger l'Extension",
+        step4Desc: "Cliquez sur \"Charger l'extension non empaquetée\" et sélectionnez le dossier extrait contenant manifest.json. Terminé !",
+        reportIssue: "Signaler un Problème",
+        privacy: "Politique de Confidentialité",
+        license: "Licence"
+      },
+      de: {
+        heroTitle: "BrowserDesktop",
+        heroTagline: "Verwandeln Sie den neuen Tab Ihres Browsers in ein atemberaubendes, anpassbares Dashboard mit wunderschönen 4K-Hintergründen, Wetter-Widgets und mehr.",
+        downloadBtn: "Erweiterung Herunterladen",
+        githubBtn: "Auf GitHub ansehen",
+        featuresTitle: "Funktionen",
+        featuresSubtitle: "Alles, was Sie für ein schönes und produktives neues Tab-Erlebnis brauchen",
+        feature1Title: "4K Hintergründe",
+        feature1Desc: "Atemberaubende hochauflösende Bilder aus über 20 Kategorien einschließlich Natur, Weltraum, Architektur und mehr.",
+        feature2Title: "Wetter-Widget",
+        feature2Desc: "Multi-Stadt-Wetterunterstützung mit automatischer Standorterkennung. Klicken Sie, um durch Ihre Lieblingsstädte zu wechseln.",
+        feature3Title: "Uhr und Datum",
+        feature3Desc: "Schöne digitale Uhr mit anpassbarem 12/24-Stunden-Format und Datumsanzeigeoptionen.",
+        feature4Title: "Anpassbar",
+        feature4Desc: "Passen Sie Unschärfe, Deckkraft, automatische Wechselintervalle an und pinnen Sie Ihre Lieblings-Bildkategorien.",
+        feature5Title: "Mehrsprachig",
+        feature5Desc: "Verfügbar in Englisch, Chinesisch, Japanisch, Koreanisch, Spanisch, Französisch und Deutsch.",
+        feature6Title: "Datenschutz Zuerst",
+        feature6Desc: "Kein Konto erforderlich. Alle Einstellungen lokal gespeichert. Kein Tracking oder Datensammlung.",
+        downloadTitle: "Jetzt Herunterladen",
+        downloadSubtitle: "Funktioniert in allen Chromium-basierten Browsern",
+        fileInfo: "ZIP-Datei • ~50KB • Kostenlos & Open Source",
+        installTitle: "Installation",
+        installSubtitle: "Starten Sie in nur 4 einfachen Schritten",
+        step1Title: "Herunterladen und Entpacken",
+        step1Desc: "Laden Sie die ZIP-Datei herunter und entpacken Sie sie an einem permanenten Ort auf Ihrem Computer.",
+        step2Title: "Erweiterungsseite Öffnen",
+        step2Desc: "Gehen Sie zu chrome://extensions/ in Chrome, edge://extensions/ in Edge, oder brave://extensions/ in Brave.",
+        step3Title: "Entwicklermodus Aktivieren",
+        step3Desc: "Schalten Sie den Schalter \"Entwicklermodus\" in der oberen rechten Ecke der Erweiterungsseite ein.",
+        step4Title: "Erweiterung Laden",
+        step4Desc: "Klicken Sie auf \"Entpackte Erweiterung laden\" und wählen Sie den entpackten Ordner mit der manifest.json. Fertig!",
+        reportIssue: "Problem Melden",
+        privacy: "Datenschutzrichtlinie",
+        license: "Lizenz"
+      }
+    };
+
+    // Change language function
+    function changeLanguage(lang) {
+      const elements = document.querySelectorAll('[data-i18n]');
+      elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang] && translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+      localStorage.setItem('browserdesktop-lang', lang);
+    }
+
+    // Initialize language on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check saved language or browser language
+      let savedLang = localStorage.getItem('browserdesktop-lang');
+      if (!savedLang) {
+        const browserLang = navigator.language.split('-')[0];
+        savedLang = translations[browserLang] ? browserLang : 'en';
+      }
+      
+      document.getElementById('lang-select').value = savedLang;
+      if (savedLang !== 'en') {
+        changeLanguage(savedLang);
+      }
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3c72"/>
+      <stop offset="50%" style="stop-color:#2a5298"/>
+      <stop offset="100%" style="stop-color:#7e8ba3"/>
+    </linearGradient>
+    <linearGradient id="mountain1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2d3561"/>
+      <stop offset="100%" style="stop-color:#1a1f3a"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1280" height="800" fill="url(#sky)"/>
+  
+  <!-- Sun -->
+  <circle cx="1000" cy="200" r="60" fill="#ffd700" opacity="0.3"/>
+  <circle cx="1000" cy="200" r="40" fill="#ffe5b4"/>
+  
+  <!-- Mountains -->
+  <polygon points="0,500 300,300 600,450 900,350 1100,400 1280,380 1280,800 0,800" fill="url(#mountain1)"/>
+  <polygon points="0,600 200,400 500,500 800,380 1000,450 1280,420 1280,800 0,800" fill="#252b4a"/>
+  
+  <!-- Clock -->
+  <text x="640" y="350" font-family="Segoe UI, sans-serif" font-size="120" font-weight="300" fill="white" text-anchor="middle" opacity="0.95">10:30</text>
+  <text x="640" y="400" font-family="Segoe UI, sans-serif" font-size="24" fill="white" text-anchor="middle" opacity="0.7">Sunday, January 5</text>
+  
+  <!-- Weather Widget -->
+  <rect x="1050" y="30" width="200" height="60" rx="30" fill="rgba(0,0,0,0.2)"/>
+  <text x="1080" y="70" font-size="32">☀️</text>
+  <text x="1120" y="60" font-family="Segoe UI, sans-serif" font-size="20" font-weight="600" fill="white">22°C</text>
+  <text x="1120" y="78" font-family="Segoe UI, sans-serif" font-size="12" fill="white" opacity="0.8">New York</text>
+  
+  <!-- Settings Button -->
+  <circle cx="50" cy="750" r="24" fill="rgba(255,255,255,0.15)"/>
+  <text x="50" y="758" font-size="20" fill="white" text-anchor="middle">⚙</text>
+  
+  <!-- Refresh Button -->
+  <circle cx="110" cy="750" r="24" fill="rgba(255,255,255,0.15)"/>
+  <text x="110" y="758" font-size="20" fill="white" text-anchor="middle">↻</text>
+  
+  <!-- Image Credit -->
+  <text x="640" y="770" font-family="Segoe UI, sans-serif" font-size="14" fill="white" text-anchor="middle" opacity="0.6">Photo by John Doe on Unsplash</text>
+  
+  <!-- Browser Frame -->
+  <rect x="0" y="0" width="1280" height="800" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+</svg>
