@@ -1102,17 +1102,20 @@
       }
     };
 
-    // Change language function
+    // Change language function - updates all elements with data-i18n attribute
     function changeLanguage(lang) {
-      const t = translations[lang];
-      if (!t) return;
+      if (!translations[lang]) {
+        alert('Language not found: ' + lang);
+        return;
+      }
       
-      // Update all elements with data-i18n attribute
-      const elements = document.querySelectorAll('[data-i18n]');
-      for (let i = 0; i < elements.length; i++) {
-        const el = elements[i];
-        const key = el.getAttribute('data-i18n');
-        if (t[key]) {
+      var t = translations[lang];
+      var elements = document.querySelectorAll('[data-i18n]');
+      
+      for (var i = 0; i < elements.length; i++) {
+        var el = elements[i];
+        var key = el.getAttribute('data-i18n');
+        if (t[key] !== undefined) {
           el.textContent = t[key];
         }
       }
@@ -1126,34 +1129,45 @@
       document.documentElement.lang = lang;
     }
 
-    // Initialize immediately
-    (function() {
+    // Handle language selector change
+    function handleLanguageChange() {
+      var select = document.getElementById('lang-select');
+      if (select) {
+        changeLanguage(select.value);
+      }
+    }
+
+    // Initialize on page load
+    window.onload = function() {
+      var select = document.getElementById('lang-select');
+      
+      if (!select) {
+        alert('Language selector not found!');
+        return;
+      }
+      
+      // Attach event handler using onclick of options or onchange
+      select.onchange = handleLanguageChange;
+      
       // Get saved or browser language
-      let lang = 'en';
+      var savedLang = null;
       try {
-        lang = localStorage.getItem('browserdesktop-lang') || navigator.language.split('-')[0];
-        if (!translations[lang]) lang = 'en';
+        savedLang = localStorage.getItem('browserdesktop-lang');
       } catch(e) {}
       
-      // Set select value and apply translations when DOM ready
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-      } else {
-        init();
+      if (!savedLang) {
+        var browserLang = navigator.language ? navigator.language.split('-')[0] : 'en';
+        savedLang = translations[browserLang] ? browserLang : 'en';
       }
       
-      function init() {
-        const select = document.getElementById('lang-select');
-        if (select) {
-          select.value = lang;
-          // Use onchange for maximum compatibility
-          select.onchange = function() {
-            changeLanguage(this.value);
-          };
-        }
-        changeLanguage(lang);
+      // Set the select value
+      select.value = savedLang;
+      
+      // Apply translations (for non-English)
+      if (savedLang !== 'en') {
+        changeLanguage(savedLang);
       }
-    })();
+    };
 
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
